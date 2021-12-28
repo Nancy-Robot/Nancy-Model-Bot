@@ -477,11 +477,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[
             InlineKeyboardButton('ᴄᴏʀᴏɴᴀ', callback_data='corona'),
             InlineKeyboardButton('ʀᴇᴘᴏʀᴛs', callback_data='report'),
-            InlineKeyboardButton('ᴀᴅᴅ ꜰɪʟᴇs', callback_data='adddfiles'),
+            InlineKeyboardButton('ᴀᴅᴅ ꜰɪʟᴇs', callback_data='addfle')
             ],[
             InlineKeyboardButton('ᴜʀʟ sʜᴏʀᴛ', callback_data='shortner'),
             InlineKeyboardButton('ᴢᴏᴍʙɪᴇs', callback_data='zombies'),
-            InlineKeyboardButton('ᴛᴛ-sᴘᴇᴇᴄʜ', callback_data='tts'),
+            InlineKeyboardButton('ᴛᴛ-sᴘᴇᴇᴄʜ', callback_data='tts')
             ],[
             InlineKeyboardButton('ɢᴛʀᴀɴs', callback_data='gtrans'),
             InlineKeyboardButton('ᴊsᴏɴ', callback_data='json'),
@@ -637,13 +637,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode='html'
         )
-    elif query.data == "adddfiles":
+    elif query.data == "addfle":
         buttons = [[
             InlineKeyboardButton('«ʙᴀᴄᴋ', callback_data='hacker')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
-            text=Script.ADDDFILES_TEXT,
+            text=Script.ADDFILE_TXT,
             reply_markup=reply_markup,
             parse_mode='html'
         )
