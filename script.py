@@ -133,6 +133,14 @@ t𝗋𝗒 𝗍𝗁𝗂𝗌 𝖮𝗎𝗍:
 3. /Runs - Jokes 
 4. /Goal or /Shoot - To Make A Goal Or Shoot"""
 
+    FILES_TXT ="""<b>ADD FILES</b>
+
+<b>Forward me a movie file from any movie channel. I will save those files. 
+Make me admin in channel if its private. 
+You can also forward all wanted movies to your channel and send last movie file of that channel
+
+Make sure your channel has only movie files!</b>"""
+
     AUTO_MANUAL_TXT = """Help: <b>Filters</b>
 
 <b>Select a filters type Below:</b>"""
