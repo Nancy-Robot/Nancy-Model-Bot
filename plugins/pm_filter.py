@@ -455,7 +455,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[
             InlineKeyboardButton('ᴄᴏʀᴏɴᴀ', callback_data='corona'),
             InlineKeyboardButton('ʀᴇᴘᴏʀᴛs', callback_data='report'),
-            InlineKeyboardButton('ᴠᴄ ᴘʟᴀʏᴇʀ', callback_data='vcplayer'),
+            InlineKeyboardButton('ᴀᴅᴅ ꜰɪʟᴇs', callback_data='files'),
             ],[
             InlineKeyboardButton('ᴜʀʟ sʜᴏʀᴛ', callback_data='shortner'),
             InlineKeyboardButton('ᴢᴏᴍʙɪᴇs', callback_data='zombies'),
@@ -612,6 +612,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
             text=Script.REPORT_TEXT,
+            reply_markup=reply_markup,
+            parse_mode='html'
+        )
+    elif query.data == "files":
+        buttons = [[
+            InlineKeyboardButton('«ʙᴀᴄᴋ', callback_data='hacker')
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(
+            text=Script.FILES_TEXT,
             reply_markup=reply_markup,
             parse_mode='html'
         )
