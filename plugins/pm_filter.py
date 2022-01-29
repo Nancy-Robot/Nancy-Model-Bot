@@ -422,8 +422,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "pages":
         await query.answer(f" ⚠️ Hey, {query.from_user.first_name}! Sorry, This Button Is Not You 😔",show_alert=True)
-    elif query.data == "imdbs":
-        await query.answer(f" 🎬 Title: {title}",show_alert=True)
     elif query.data == "start":
         buttons = [[
             InlineKeyboardButton('➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘs ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
@@ -924,14 +922,14 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
         )
         btn.insert(0,
-            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="imdbs")]
+            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
         )
     else:
         btn.append(
             [InlineKeyboardButton(text="🗓 1/1 🗓",callback_data="pages")]
         )
         btn.insert(0,
-            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="imdbs")]
+            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
         )
     reply_id = message.reply_to_message.message_id if message.reply_to_message else message.message_id
     imdb = await get_poster(search, file=(files[0]).file_name) if IMDB else None
