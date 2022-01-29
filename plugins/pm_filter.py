@@ -514,7 +514,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             parse_mode='html'
         )
     elif query.data == "vcplayer":
-        await query.answer(f"🎬 Title: {title}",show_alert=True)
+        await query.answer(f"🎭 Genre: {genres}",show_alert=True)
     elif query.data == "code":
         await query.answer("നീ ഏതാ..... ഒന്ന് പോടെയ് അവൻ Source Code ചോയ്ച്ച് വന്നിരിക്കുന്നു. നോക്കി ഇരുന്നോ, ഇപ്പൊ കിട്ടും. 😂 മാമനൊടു ഒന്നും തോന്നല്ലേ മക്കളേ. 😊",show_alert=True)
     elif query.data == "source":
