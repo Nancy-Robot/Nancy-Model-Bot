@@ -421,7 +421,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             )
 
     elif query.data == "pages":
-        await query.answer()
+        await query.answer("⚠️ Hey, {query.from_user.first_name}! Sorry, This Button Is Not You 😔",show_alert=True)
     elif query.data == "start":
         buttons = [[
             InlineKeyboardButton('➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘs ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
