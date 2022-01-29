@@ -513,8 +513,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode='html'
         )
-    elif query.data == "vcplayer":
-        await query.answer(f"🎭 Genre: {genres}",show_alert=True)
+    elif query.data == "vcplayers":
+        await query.answer("hi",show_alert=True)
     elif query.data == "code":
         await query.answer("നീ ഏതാ..... ഒന്ന് പോടെയ് അവൻ Source Code ചോയ്ച്ച് വന്നിരിക്കുന്നു. നോക്കി ഇരുന്നോ, ഇപ്പൊ കിട്ടും. 😂 മാമനൊടു ഒന്നും തോന്നല്ലേ മക്കളേ. 😊",show_alert=True)
     elif query.data == "source":
@@ -1053,6 +1053,8 @@ async def advantage_spell_chok(msg):
     await asyncio.sleep(20)
     await m.delete()
 
+    elif query.data == "vcplayer":
+        await query.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
