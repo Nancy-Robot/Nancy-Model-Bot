@@ -965,6 +965,8 @@ async def auto_filter(client, msg, spoll=False):
             url = imdb['url'],
             **locals()
         )
+    elif query.data == "vcplayer":
+        await query.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
     else:
         cap = f"<b>🎬 Title:</b> {search}\n\n<b>👥 Requested by: {message.from_user.mention}</b>\n<b>© Powered by: <a href='https://t.me/kerala_rockers'>{message.chat.title}</a></b>\n\n<b>✍️ Note:</b> <s>This message will be Auto-deleted after 5 minutes to avoid copyright issues.</s>"
     if imdb and imdb.get('poster'):
@@ -1052,8 +1054,7 @@ async def advantage_spell_chok(msg):
     m = await msg.reply(f"Hey, {msg.from_user.mention}!\nI couldn't find anything related to that\nDid you mean any one of these?", reply_markup=InlineKeyboardMarkup(btn))
     await asyncio.sleep(20)
     await m.delete()
-    elif query.data == "vcplayer":
-        await query.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
+    
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
