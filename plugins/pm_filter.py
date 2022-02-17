@@ -97,6 +97,10 @@ async def next_page(bot, query):
                 InlineKeyboardButton(f"🗓 {round(int(offset)/10)+1} / {round(total/10)}", callback_data="pages"),
                 InlineKeyboardButton("NEXT »", callback_data=f"next_{req}_{key}_{n_offset}")
             ],
+        ) 
+        btn.append(
+            [   InlineKeyboardButton(text="🤖 CHECK MY PM 🤖", url=f"https://telegram.dog/{bot_info.BOT_USERNAME}")
+            ]
         )
     try:
         await query.edit_message_reply_markup( 
