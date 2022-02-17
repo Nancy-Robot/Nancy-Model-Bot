@@ -919,17 +919,14 @@ async def auto_filter(client, msg, spoll=False):
         BUTTONS[key] = search
         req = message.from_user.id if message.from_user else 0
         btn.append(
-            [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
-        )
-        btn.append(
-            [InlineKeyboardButton(text="🤖 CHECK MY PM 🤖", url=f"https://t.me/Oru_adaar_Robot")]
+            [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Oru_adaar_Robot"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
         )
         btn.insert(0,
             [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
         )
     else:
         btn.append(
-            [InlineKeyboardButton(text="🗓 1/1 🗓",callback_data="pages")]
+            [InlineKeyboardButton(text="🗓 1/1 🗓",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Oru_adaar_Robot")]
         )
         btn.insert(0,
             [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
