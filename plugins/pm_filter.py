@@ -922,7 +922,7 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
         )
         btn.append(
-            [InlineKeyboardButton(text="🤖 CHECK MY PM 🤖", url=f"https://telegram.dog/{bot_info.BOT_USERNAME}")]
+            [InlineKeyboardButton(text="🤖 CHECK MY PM 🤖", url=f"https://t.me/Oru_adaar_Robot")]
         )
         btn.insert(0,
             [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
