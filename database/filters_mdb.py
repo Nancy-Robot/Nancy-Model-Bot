@@ -25,11 +25,11 @@ async def add_filter(grp_id, text, reply_text, btn, file, alert):
         mycol.update_one({'text': str(text)},  {"$set": data}, upsert=True)
     except:
         logger.exception('Some error occured!', exc_info=True)
-             
-     
+
+
 async def find_filter(group_id, name):
     mycol = mydb[str(group_id)]
-    
+
     query = mycol.find( {"text":name})
     # query = mycol.find( { "$text": {"$search": name}})
     try:
@@ -62,7 +62,7 @@ async def get_filters(group_id):
 
 async def delete_filter(message, text, group_id):
     mycol = mydb[str(group_id)]
-    
+
     myquery = {'text':text }
     query = mycol.count_documents(myquery)
     if query == 1:
@@ -94,7 +94,10 @@ async def count_filters(group_id):
     mycol = mydb[str(group_id)]
 
     count = mycol.count()
-    return False if count == 0 else count
+    if count == 0:
+        return False
+    else:
+        return count
 
 
 async def filter_stats():
