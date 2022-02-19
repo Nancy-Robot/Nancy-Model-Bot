@@ -1,200 +1,271 @@
-import logging
-import asyncio
-from pyrogram import Client, filters
-from pyrogram.errors import FloodWait
-from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, ChatAdminRequired, UsernameInvalid, UsernameNotModified
+import io
+from pyrogram import filters, Client
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from database.filters_mdb import(
+   add_filter,
+   get_filters,
+   delete_filter,
+   count_filters
+)
+
+from database.connections_mdb import active_connection
+from utils import get_file_id, parser, split_quotes
 from info import ADMINS
-from info import INDEX_REQ_CHANNEL as LOG_CHANNEL
-from database.ia_filterdb import save_file
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from utils import temp
-import re
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-lock = asyncio.Lock()
 
 
-@Client.on_callback_query(filters.regex(r'^index'))
-async def index_files(bot, query):
-    if query.data.startswith('index_cancel'):
-        temp.CANCEL = True
-        return await query.answer("Cancelling Indexing")
-    _, raju, chat, lst_msg_id, from_user = query.data.split("#")
-    if raju == 'reject':
-        await query.message.delete()
-        await bot.send_message(int(from_user),
-                               f'Your Submission for indexing {chat} has been decliened by our moderators.',
-                               reply_to_message_id=int(lst_msg_id))
-        return
+@Client.on_message(filters.command(['filter', 'add']) & filters.incoming)
+async def addfilter(client, message):
+    userid = message.from_user.id if message.from_user else None
+    if not userid:
+        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
+    chat_type = message.chat.type
+    args = message.text.html.split(None, 1)
 
-    if lock.locked():
-        return await query.answer('Wait until previous process complete.', show_alert=True)
-    msg = query.message
-
-    await query.answer('Processing...⏳', show_alert=True)
-    if int(from_user) not in ADMINS:
-        await bot.send_message(int(from_user),
-                               f'Your Submission for indexing {chat} has been accepted by our moderators and will be added soon.',
-                               reply_to_message_id=int(lst_msg_id))
-    await msg.edit(
-        "Starting Indexing",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton('Cancel', callback_data='index_cancel')]]
-        )
-    )
-    try:
-        chat = int(chat)
-    except:
-        chat = chat
-    await index_files_to_db(int(lst_msg_id), chat, msg, bot)
-
-
-@Client.on_message((filters.forwarded | (filters.regex("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")) & filters.text ) & filters.private & filters.incoming)
-async def send_for_index(bot, message):
-    if message.text:
-        regex = re.compile("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
-        match = regex.match(message.text)
-        if not match:
-            return await message.reply('Invalid link')
-        chat_id = match.group(4)
-        last_msg_id = int(match.group(5))
-        if chat_id.isnumeric():
-            chat_id  = int(("-100" + chat_id))
-    elif message.forward_from_chat.type == 'channel':
-        last_msg_id = message.forward_from_message_id
-        chat_id = message.forward_from_chat.username or message.forward_from_chat.id
-    else:
-        return
-    try:
-        await bot.get_chat(chat_id)
-    except ChannelInvalid:
-        return await message.reply('This may be a private channel / group. Make me an admin over there to index the files.')
-    except (UsernameInvalid, UsernameNotModified):
-        return await message.reply('Invalid Link specified.')
-    except Exception as e:
-        logger.exception(e)
-        return await message.reply(f'Errors - {e}')
-    try:
-        k = await bot.get_messages(chat_id, last_msg_id)
-    except:
-        return await message.reply('Make Sure That Iam An Admin In The Channel, if channel is private')
-    if k.empty:
-        return await message.reply('This may be group and iam not a admin of the group.')
-
-    if message.from_user.id in ADMINS:
-        buttons = [
-            [
-                InlineKeyboardButton('Yes',
-                                     callback_data=f'index#accept#{chat_id}#{last_msg_id}#{message.from_user.id}')
-            ],
-            [
-                InlineKeyboardButton('close', callback_data='close_data'),
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        return await message.reply(
-            f'Do you Want To Index This Channel/ Group ?\n\nChat ID/ Username: <code>{chat_id}</code>\nLast Message ID: <code>{last_msg_id}</code>',
-            reply_markup=reply_markup)
-
-    if type(chat_id) is int:
-        try:
-            link = (await bot.create_chat_invite_link(chat_id)).invite_link
-        except ChatAdminRequired:
-            return await message.reply('Make sure iam an admin in the chat and have permission to invite users.')
-    else:
-        link = f"@{message.forward_from_chat.username}"
-    buttons = [
-        [
-            InlineKeyboardButton('Accept Index',
-                                 callback_data=f'index#accept#{chat_id}#{last_msg_id}#{message.from_user.id}')
-        ],
-        [
-            InlineKeyboardButton('Reject Index',
-                                 callback_data=f'index#reject#{chat_id}#{message.message_id}#{message.from_user.id}'),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(buttons)
-    await bot.send_message(LOG_CHANNEL,
-                           f'#IndexRequest\n\nBy : {message.from_user.mention} (<code>{message.from_user.id}</code>)\nChat ID/ Username - <code> {chat_id}</code>\nLast Message ID - <code>{last_msg_id}</code>\nInviteLink - {link}',
-                           reply_markup=reply_markup)
-    await message.reply('ThankYou For the Contribution, Wait For My Moderators to verify the files.')
-
-
-@Client.on_message(filters.command('setskip') & filters.user(ADMINS))
-async def set_skip_number(bot, message):
-    if ' ' in message.text:
-        _, skip = message.text.split(" ")
-        try:
-            skip = int(skip)
-        except:
-            return await message.reply("Skip number should be an integer.")
-        await message.reply(f"Successfully set SKIP number as {skip}")
-        temp.CURRENT = int(skip)
-    else:
-        await message.reply("Give me a skip number")
-
-
-async def index_files_to_db(lst_msg_id, chat, msg, bot):
-    total_files = 0
-    duplicate = 0
-    errors = 0
-    deleted = 0
-    no_media = 0
-    async with lock:
-        try:
-            total = lst_msg_id + 1
-            current = temp.CURRENT
-            temp.CANCEL = False
-            while current < total:
-                if temp.CANCEL:
-                    await msg.edit("Successfully Cancelled")
-                    break
-                try:
-                    message = await bot.get_messages(chat_id=chat, message_ids=current, replies=0)
-                except FloodWait as e:
-                    await asyncio.sleep(e.x)
-                    message = await bot.get_messages(
-                        chat,
-                        current,
-                        replies=0
-                    )
-                except Exception as e:
-                    logger.exception(e)
-                try:
-                    for file_type in ("document", "video", "audio"):
-                        media = getattr(message, file_type, None)
-                        if media is not None:
-                            break
-                        else:
-                            continue
-                    media.file_type = file_type
-                    media.caption = message.caption
-                    aynav, vnay = await save_file(media)
-                    if aynav:
-                        total_files += 1
-                    elif vnay == 0:
-                        duplicate += 1
-                    elif vnay == 2:
-                        errors += 1
-                except Exception as e:
-                    if "NoneType" in str(e):
-                        if message.empty:
-                            deleted += 1
-                        elif not media:
-                            no_media += 1
-                        logger.warning("Skipping deleted / Non-Media messages (if this continues for long, use /setskip to set a skip number)")     
-                    else:
-                        logger.exception(e)
-                current += 1
-                if current % 20 == 0:
-                    can = [[InlineKeyboardButton('Cancel', callback_data='index_cancel')]]
-                    reply = InlineKeyboardMarkup(can)
-                    await msg.edit_text(
-                        text=f"Total messages fetched: <code>{current}</code>\nTotal messages saved: <code>{total_files}</code>\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media}</code>\nErrors Occurred: <code>{errors}</code>",
-                        reply_markup=reply)
-        except Exception as e:
-            logger.exception(e)
-            await msg.edit(f'Error: {e}')
+    if chat_type == "private":
+        grpid = await active_connection(str(userid))
+        if grpid is not None:
+            grp_id = grpid
+            try:
+                chat = await client.get_chat(grpid)
+                title = chat.title
+            except:
+                await message.reply_text("Make sure I'm present in your group!!", quote=True)
+                return
         else:
-            await msg.edit(f'Successfully saved <code>{total_files}</code> to dataBase!\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media}</code>\nErrors Occurred: <code>{errors}</code>')
-   
+            await message.reply_text("I'm not connected to any groups!", quote=True)
+            return
+
+    elif chat_type in ["group", "supergroup"]:
+        grp_id = message.chat.id
+        title = message.chat.title
+
+    else:
+        return
+
+    st = await client.get_chat_member(grp_id, userid)
+    if (
+        st.status != "administrator"
+        and st.status != "creator"
+        and str(userid) not in ADMINS
+    ):
+        return
+
+
+    if len(args) < 2:
+        await message.reply_text("Command Incomplete :(", quote=True)
+        return
+
+    extracted = split_quotes(args[1])
+    text = extracted[0].lower()
+
+    if not message.reply_to_message and len(extracted) < 2:
+        await message.reply_text("Add some content to save your filter!", quote=True)
+        return
+
+    if (len(extracted) >= 2) and not message.reply_to_message:
+        reply_text, btn, alert = parser(extracted[1], text)
+        fileid = None
+        if not reply_text:
+            await message.reply_text("You cannot have buttons alone, give some text to go with it!", quote=True)
+            return
+
+    elif message.reply_to_message and message.reply_to_message.reply_markup:
+        try:
+            rm = message.reply_to_message.reply_markup
+            btn = rm.inline_keyboard
+            msg = get_file_id(message.reply_to_message)
+            if msg:
+                fileid = msg.file_id
+                reply_text = message.reply_to_message.caption.html
+            else:
+                reply_text = message.reply_to_message.text.html
+                fileid = None
+            alert = None
+        except:
+            reply_text = ""
+            btn = "[]" 
+            fileid = None
+            alert = None
+
+    elif message.reply_to_message and message.reply_to_message.media:
+        try:
+            msg = get_file_id(message.reply_to_message)
+            fileid = msg.file_id if msg else None
+            reply_text, btn, alert = parser(extracted[1], text) if message.reply_to_message.sticker else parser(message.reply_to_message.caption.html, text)
+        except:
+            reply_text = ""
+            btn = "[]"
+            alert = None
+    elif message.reply_to_message and message.reply_to_message.text:
+        try:
+            fileid = None
+            reply_text, btn, alert = parser(message.reply_to_message.text.html, text)
+        except:
+            reply_text = ""
+            btn = "[]"
+            alert = None
+    else:
+        return
+
+    await add_filter(grp_id, text, reply_text, btn, fileid, alert)
+
+    await message.reply_text(
+        f"Filter for  `{text}`  added in  **{title}**",
+        quote=True,
+        parse_mode="md"
+    )
+
+
+@Client.on_message(filters.command(['viewfilters', 'filters']) & filters.incoming)
+async def get_all(client, message):
+    
+    chat_type = message.chat.type
+    userid = message.from_user.id if message.from_user else None
+    if not userid:
+        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
+    if chat_type == "private":
+        userid = message.from_user.id
+        grpid = await active_connection(str(userid))
+        if grpid is not None:
+            grp_id = grpid
+            try:
+                chat = await client.get_chat(grpid)
+                title = chat.title
+            except:
+                await message.reply_text("Make sure I'm present in your group!!", quote=True)
+                return
+        else:
+            await message.reply_text("I'm not connected to any groups!", quote=True)
+            return
+
+    elif chat_type in ["group", "supergroup"]:
+        grp_id = message.chat.id
+        title = message.chat.title
+
+    else:
+        return
+
+    st = await client.get_chat_member(grp_id, userid)
+    if (
+        st.status != "administrator"
+        and st.status != "creator"
+        and str(userid) not in ADMINS
+    ):
+        return
+
+    texts = await get_filters(grp_id)
+    count = await count_filters(grp_id)
+    if count:
+        filterlist = f"Total number of filters in **{title}** : {count}\n\n"
+
+        for text in texts:
+            keywords = " ×  `{}`\n".format(text)
+
+            filterlist += keywords
+
+        if len(filterlist) > 4096:
+            with io.BytesIO(str.encode(filterlist.replace("`", ""))) as keyword_file:
+                keyword_file.name = "keywords.txt"
+                await message.reply_document(
+                    document=keyword_file,
+                    quote=True
+                )
+            return
+    else:
+        filterlist = f"There are no active filters in **{title}**"
+
+    await message.reply_text(
+        text=filterlist,
+        quote=True,
+        parse_mode="md"
+    )
+        
+@Client.on_message(filters.command('del') & filters.incoming)
+async def deletefilter(client, message):
+    userid = message.from_user.id if message.from_user else None
+    if not userid:
+        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
+    chat_type = message.chat.type
+
+    if chat_type == "private":
+        grpid  = await active_connection(str(userid))
+        if grpid is not None:
+            grp_id = grpid
+            try:
+                chat = await client.get_chat(grpid)
+                title = chat.title
+            except:
+                await message.reply_text("Make sure I'm present in your group!!", quote=True)
+                return
+        else:
+            await message.reply_text("I'm not connected to any groups!", quote=True)
+
+    elif chat_type in ["group", "supergroup"]:
+        grp_id = message.chat.id
+        title = message.chat.title
+
+    else:
+        return
+
+    st = await client.get_chat_member(grp_id, userid)
+    if (
+        st.status != "administrator"
+        and st.status != "creator"
+        and str(userid) not in ADMINS
+    ):
+        return
+
+    try:
+        cmd, text = message.text.split(" ", 1)
+    except:
+        await message.reply_text(
+            "<i>Mention the filtername which you wanna delete!</i>\n\n"
+            "<code>/del filtername</code>\n\n"
+            "Use /viewfilters to view all available filters",
+            quote=True
+        )
+        return
+
+    query = text.lower()
+
+    await delete_filter(message, query, grp_id)
+        
+
+@Client.on_message(filters.command('delall') & filters.incoming)
+async def delallconfirm(client, message):
+    userid = message.from_user.id if message.from_user else None
+    if not userid:
+        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
+    chat_type = message.chat.type
+
+    if chat_type == "private":
+        grpid  = await active_connection(str(userid))
+        if grpid is not None:
+            grp_id = grpid
+            try:
+                chat = await client.get_chat(grpid)
+                title = chat.title
+            except:
+                await message.reply_text("Make sure I'm present in your group!!", quote=True)
+                return
+        else:
+            await message.reply_text("I'm not connected to any groups!", quote=True)
+            return
+
+    elif chat_type in ["group", "supergroup"]:
+        grp_id = message.chat.id
+        title = message.chat.title
+
+    else:
+        return
+
+    st = await client.get_chat_member(grp_id, userid)
+    if (st.status == "creator") or (str(userid) in ADMINS):
+        await message.reply_text(
+            f"This will delete all filters from '{title}'.\nDo you want to continue??",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(text="Yes",callback_data="delallconfirm")],
+                [InlineKeyboardButton(text="Cancel",callback_data="delallcancel")]
+            ]),
+            quote=True
+        )
