@@ -1,10 +1,10 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT
+from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS
 from database.users_chats_db import db
 from database.ia_filterdb import Media
-from utils import get_size, temp
+from utils import get_size, temp, get_settings
 from script import Script
 from pyrogram.errors import ChatAdminRequired
 
@@ -47,19 +47,19 @@ async def save_group(bot, message):
     else:
         settings = await get_settings(message.chat.id)
         if settings["welcome"]:
-        for u in message.new_chat_members:
-            zaute = [[
-            InlineKeyboardButton('⚠️ JOIN CHANNEL... 🥰 ', url="https://t.me/kerala_rockers")
-        ]]
-            if (temp.MELCOW).get('welcome') is not None:
-                try:
-                    await (temp.MELCOW['welcome']).delete()
-                except:
-                    pass
-            temp.MELCOW['welcome'] = await message.reply_text(
-            text=f"<b>👋 Hi! {u.mention}, Welcome to {message.chat.title}</b>",
-            disable_web_page_preview = True,
-            reply_markup=InlineKeyboardMarkup(zaute))
+            for u in message.new_chat_members:
+                buttons = [[
+                InlineKeyboardButton('👉 ⚠️ Press me... 🥰 👈', url="https://t.me/kerala_Rockers")
+            ]]
+                if (temp.MELCOW).get('welcome') is not None:
+                    try:
+                        await (temp.MELCOW['welcome']).delete()
+                    except:
+                        pass
+                temp.MELCOW['welcome'] = await message.reply_text(
+                text=f"<b>👋 Hi! {u.mention},</b> Welcome to <b>{message.chat.title}</b>\n\n<b>👇 Just Click On The Join Button Below And You Will Get The Required Movie Link Work.</b>\n1️⃣ <b>Request In This Format👇</b>\n\nEg : Titanic  ✅ Titanic 1997 ✅ Titanic English Movie ❌",
+                disable_web_page_preview = True,
+                reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
