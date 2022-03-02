@@ -965,8 +965,8 @@ async def auto_filter(client, msg, spoll=False):
             url = imdb['url'],
             **locals()
         )
-    elif query.data == "vcplayer":
-        await query.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
+    elif message.data == "vcplayer":
+        await message.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
     else:
         cap = f"<b>🎬 Title:</b> {search}\n\n<b>👥 Requested by: {message.from_user.mention}</b>\n<b>© Powered by: <a href='https://t.me/kerala_rockers'>{message.chat.title}</a></b>\n\n<b>✍️ Note:</b> <s>This message will be Auto-deleted after 5 minutes to avoid copyright issues.</s>"
     if imdb and imdb.get('poster'):
