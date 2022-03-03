@@ -406,7 +406,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [
             [
                 InlineKeyboardButton('⚜ ᴄʜᴀɴɴᴇʟ', url='https://t.me/kerala_rockers'),        
-                InlineKeyboardButton('ɢʀᴏᴜᴘ ⚜️', url='https://t.me/+XiEBk6zT8RM5MjI9')
+                InlineKeyboardButton('ɢʀᴏᴜᴘ ⚜️', url='https://t.me/+8vhZdxYy5ncyYWQ1')
             ],
             [
                 InlineKeyboardButton('🎭 ᴄʜᴀɴɴᴇʟ', url=f'https://t.me/+CeY_RGCtK1g0ZWQ9'),
@@ -684,7 +684,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
             InlineKeyboardButton('⚜ ᴊᴏɪɴ ᴍᴀɪɴ ᴄʜᴀɴɴᴇʟ ⚜', url='https://t.me/kerala_rockers'),
             ],[
-            InlineKeyboardButton('ɢʀᴏᴜᴘ 1', url='https://t.me/+XiEBk6zT8RM5MjI9'),
+            InlineKeyboardButton('ɢʀᴏᴜᴘ 1', url='https://t.me/+8vhZdxYy5ncyYWQ1'),
             InlineKeyboardButton('ɢʀᴏᴜᴘ 2', url='https://t.me/+_UN8U9jUmwg1ODE1'),
             InlineKeyboardButton('ɢʀᴏᴜᴘ 3', url='https://t.me/KL_GROUP1')
             ],[
@@ -895,7 +895,7 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
+                    text=f"📂 [{get_size(file.file_size)}] ✧ {file.file_name}", callback_data=f'files#{file.file_id}'
                 ),
             ]
             for file in files
