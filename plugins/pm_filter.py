@@ -350,16 +350,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             f_caption=f_caption
         if f_caption is None:
             f_caption = f"{files.file_name}"
-        buttons = [
-            [
-                InlineKeyboardButton('⚜ ᴄʜᴀɴɴᴇʟ', url='https://t.me/kerala_rockers'),        
-                InlineKeyboardButton('ɢʀᴏᴜᴘ ⚜️', url='https://t.me/+XiEBk6zT8RM5MjI9')
-            ],
-            [
-                InlineKeyboardButton('🎭 ᴄʜᴀɴɴᴇʟ', url=f'https://t.me/+CeY_RGCtK1g0ZWQ9'),
-                InlineKeyboardButton('sʜᴀʀᴇ ᴍᴇ 🤝', url=f'https://t.me/share/url?url=https://t.me/Oru_adaar_Robot')
-            ]
-            ]
             
         try:
             if AUTH_CHANNEL and not await is_subscribed(client, query):
@@ -402,17 +392,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 logger.exception(e)
                 f_caption=f_caption
         if f_caption is None:
-            f_caption = f"{title}"
-        buttons = [
-            [
-                InlineKeyboardButton('⚜ ᴄʜᴀɴɴᴇʟ', url='https://t.me/kerala_rockers'),        
-                InlineKeyboardButton('ɢʀᴏᴜᴘ ⚜️', url='https://t.me/+8vhZdxYy5ncyYWQ1')
-            ],
-            [
-                InlineKeyboardButton('🎭 ᴄʜᴀɴɴᴇʟ', url=f'https://t.me/+CeY_RGCtK1g0ZWQ9'),
-                InlineKeyboardButton('sʜᴀʀᴇ ᴍᴇ 🤝', url=f'https://t.me/share/url?url=https://t.me/Oru_adaar_Robot')
-            ]
-            ]
+            f_caption = f"{title}"        
         await query.answer()
         await client.send_cached_media(
             chat_id=query.from_user.id,
@@ -429,9 +409,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[
             InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ', switch_inline_query_current_chat=''),
             InlineKeyboardButton('⚙️ ʜᴇʟᴘ', callback_data='help')
-            ],[
-            InlineKeyboardButton('📣 ɢʀᴏᴜᴘ & ᴄʜᴀɴɴᴇʟ ʟɪɴᴋs 📣', callback_data='link')
-            ],[
+            ],[            
             InlineKeyboardButton('😎 ᴀʙᴏᴜᴛ', callback_data='about'),
             InlineKeyboardButton('🔐 ᴄʟᴏsᴇ', callback_data='close_data')
         ]]
@@ -489,7 +467,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('sᴛᴀᴛᴜs', callback_data='stats')
             ],[
             InlineKeyboardButton('«ʙᴀᴄᴋ', callback_data='help'),
-            InlineKeyboardButton('ᴄʟᴏsᴇ 🔐', callback_data='close_data')
+            InlineKeyboardButton('ᴄʟᴏsᴇ', callback_data='close_data')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
@@ -680,18 +658,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             parse_mode='html'
         )
-    elif query.data == "link":
-        buttons = [[
-            InlineKeyboardButton('⚜ ᴊᴏɪɴ ᴍᴀɪɴ ᴄʜᴀɴɴᴇʟ ⚜', url='https://t.me/kerala_rockers'),
-            ],[
-            InlineKeyboardButton('ɢʀᴏᴜᴘ 1', url='https://t.me/+8vhZdxYy5ncyYWQ1'),
-            InlineKeyboardButton('ɢʀᴏᴜᴘ 2', url='https://t.me/+_UN8U9jUmwg1ODE1'),
-            InlineKeyboardButton('ɢʀᴏᴜᴘ 3', url='https://t.me/KL_GROUP1')
-            ],[
-            InlineKeyboardButton('«ʜᴏᴍᴇ', callback_data='start'),
-            InlineKeyboardButton('ᴄʟᴏsᴇ!', callback_data='close_data'),
-            InlineKeyboardButton('ʜᴇʟᴘ»', callback_data='help')
-        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
             text=Script.LINK_TXT,
@@ -920,17 +886,23 @@ async def auto_filter(client, msg, spoll=False):
         BUTTONS[key] = search
         req = message.from_user.id if message.from_user else 0
         btn.append(
-            [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Oru_adaar_Robot"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
+            [InlineKeyboardButton(text=f"🗓 1/{round(int(total_results)/10)}",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Mariyamathomas_bot"), InlineKeyboardButton(text="NEXT »",callback_data=f"next_{req}_{key}_{offset}")]
         )
         btn.insert(0,
-            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
+            [
+            InlineKeyboardButton(f"🔮 {search}", "dupe"),
+            InlineKeyboardButton(f"🗂️ Files: {len(files)}", "dupe")
+            ]
         )
     else:
         btn.append(
-            [InlineKeyboardButton(text="🗓 1/1 🗓",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Oru_adaar_Robot")]
+            [InlineKeyboardButton(text="🗓 1/1 🗓",callback_data="pages"), InlineKeyboardButton(text="CHECK PM!", url=f"https://t.me/Mariyamathomas_bot")]
         )
         btn.insert(0,
-            [InlineKeyboardButton(text=f"🔮 {search} 🔮",callback_data="vcplayer")]
+            [
+            InlineKeyboardButton(f"🔮 {search}", "dupe"),
+            InlineKeyboardButton(f"🗂️ Files: {len(files)}", "dupe")
+            ]
         )
     reply_id = message.reply_to_message.message_id if message.reply_to_message else message.message_id
     imdb = await get_poster(search, file=(files[0]).file_name) if IMDB else None
@@ -969,7 +941,7 @@ async def auto_filter(client, msg, spoll=False):
     elif message.data == "vcplayer":
         await message.answer(f"🎬 Title: {title}\n Runtime: {runtime}",show_alert=True)
     else:
-        cap = f"<b>🎬 Title:</b> {search}\n\n<b>👥 Requested by: {message.from_user.mention}</b>\n<b>© Powered by: <a href='https://t.me/kerala_rockers'>{message.chat.title}</a></b>\n\n<b>✍️ Note:</b> <s>This message will be Auto-deleted after 5 minutes to avoid copyright issues.</s>"
+        cap = f"<b>🎬 Title: {search}</b>\n\n<b>👥 Requested by: {message.from_user.mention}</b>\n<b>© Powered by: <a href='https://t.me/kerala_rockers'>{message.chat.title}</a></b>\n\n<b>✍️ Note:</b> <s>This message will be Auto-deleted after 5 minutes to avoid copyright issues.</s>"
     if imdb and imdb.get('poster'):
         try:
             hehe = await message.reply_photo(photo=imdb.get('poster'), caption=cap, reply_to_message_id=reply_id, reply_markup=InlineKeyboardMarkup(btn))
