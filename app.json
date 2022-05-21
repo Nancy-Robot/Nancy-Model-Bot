@@ -1,5 +1,5 @@
 {
-    "name": "telegram movie bot",
+    "name": "Nancy Movie Bot",
     "description": "When you going to send file on telegram channel this bot will save that in database, So you can search that easily in inline mode",
     "stack": "container",
     "keywords": [
@@ -15,8 +15,8 @@
       "index",
       "inline"
     ],
-    "website": "https://github.com/Hacker-Jr-TG/nancyrobot",
-    "repository": "https://github.com/Hacker-Jr-TG/nancyrobot",
+    "website": "https://github.com/Nancy-Robot/Nancy-Model-Bot",
+    "repository": "https://github.com/Nancy-Robot/Nancy-Model-Bot",
     "env": {
         "BOT_TOKEN": {
             "description": "Your Bot Token. Get from @BotFather.",
