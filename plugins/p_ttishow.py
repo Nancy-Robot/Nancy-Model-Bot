@@ -8,7 +8,7 @@ from utils import get_size, temp, get_settings
 from script import Script
 from pyrogram.errors import ChatAdminRequired
 
-"""-----------------------------------------https://t.me/JosProjects --------------------------------------"""
+"""-------------------------------------------------------------------------------"""
 
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
@@ -54,7 +54,7 @@ async def save_group(bot, message):
                     except:
                         pass
                 temp.MELCOW['welcome'] = await message.reply_text(
-                text=f"<b>👋 Hi! {u.mention},</b> Welcome to <b>🎭 {message.chat.title}</b>
+                text=f"<b>👋 Hi! {u.mention},</b> Welcome to <b>🎭 {message.chat.title}.</b>
                 disable_web_page_preview = True,
                 reply_markup=InlineKeyboardMarkup(buttons))
 
