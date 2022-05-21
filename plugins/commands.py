@@ -49,8 +49,6 @@ async def start(client, message):
             InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ', switch_inline_query_current_chat=''),
             InlineKeyboardButton('⚙️ ʜᴇʟᴘ', callback_data='help')
             ],[
-            InlineKeyboardButton('📣 ɢʀᴏᴜᴘ & ᴄʜᴀɴɴᴇʟ ʟɪɴᴋs 📣', callback_data='link')
-            ],[
             InlineKeyboardButton('😎 ᴀʙᴏᴜᴛ', callback_data='about'),
             InlineKeyboardButton('🔐 ᴄʟᴏsᴇ', callback_data='close_data')
         ]]
@@ -94,8 +92,6 @@ async def start(client, message):
             InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ', switch_inline_query_current_chat=''),
             InlineKeyboardButton('⚙️ ʜᴇʟᴘ', callback_data='help')
             ],[
-            InlineKeyboardButton('📣 ɢʀᴏᴜᴘ & ᴄʜᴀɴɴᴇʟ ʟɪɴᴋs 📣', callback_data='link')
-            ],[
             InlineKeyboardButton('😎 ᴀʙᴏᴜᴛ', callback_data='about'),
             InlineKeyboardButton('🔐 ᴄʟᴏsᴇ', callback_data='close_data')
         ]]
@@ -124,16 +120,6 @@ async def start(client, message):
             f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
-    buttons = [
-            [
-                InlineKeyboardButton('⚜ ᴄʜᴀɴɴᴇʟ', url='https://t.me/kerala_rockers'),        
-                InlineKeyboardButton('ɢʀᴏᴜᴘ ⚜️', url='https://t.me/+XiEBk6zT8RM5MjI9')
-            ],
-            [
-                InlineKeyboardButton('🎭 ᴄʜᴀɴɴᴇʟ', url=f'https://t.me/+CeY_RGCtK1g0ZWQ9'),
-                InlineKeyboardButton('sʜᴀʀᴇ ᴍᴇ 🤝', url=f'https://t.me/share/url?url=https://t.me/Oru_adaar_Robot')
-            ]
-            ]
     await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
