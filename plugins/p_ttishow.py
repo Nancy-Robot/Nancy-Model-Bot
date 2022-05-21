@@ -57,7 +57,6 @@ async def save_group(bot, message):
                 text=f"<b>👋 Hi! {u.mention},</b> Welcome to <b>🎭 {message.chat.title}</b>",
                 disable_web_page_preview = True,                
 
-
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
 async def leave_a_chat(bot, message):
     if len(message.command) == 1:
